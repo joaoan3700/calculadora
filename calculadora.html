@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculadora</title>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <style>
+    </style>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <center><img class="mb-4" src="https://images.cws.digital/fornecedores/m/curinga-pneumaticos-ltda-b2c.jpg" style="max-height: 60px;"/>
+      <h1 class="mb-4">Calculadora de preço e margem</h1></center>
+      <form>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label
+              style="font-size: x-large; font-weight: bold"
+              for="inputCusto"
+              >Preço de Custo</label
+            >
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span
+                  class="input-group-text"
+                  >R$</span
+                >
+              </div>
+              <input
+                type="number"
+                class="form-control"  
+                id="inputCusto"
+                step="0.01"
+                min="0"
+                onchange="calcular(); enableInput();"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label
+              style="font-size: x-large; font-weight: bold"
+              for="inputMarkup"
+              >Markup</label
+            >
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="inputMarkup"
+                step="0.01"
+                min="0"
+                max="10"
+                onchange="calcular(); enableInput();"
+                required
+              />
+              <div class="input-group-append">
+                <span
+                  class="input-group-text"
+                  class="input-group-text"
+                  >0,0</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label
+              style="font-size: x-large; font-weight: bold"
+              for="inputDesconto"
+              >Desconto</label
+            >
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="inputDesconto"
+                step="0.01"
+                min="0"
+                max="100"
+                onchange="calcular(); enableInput();"
+                required
+              />
+              <div class="input-group-append">
+                <span
+                  class="input-group-text"
+                  class="input-group-text"
+                  >%</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label
+              style="font-size: x-large; font-weight: bold"
+              for="inputPrecoVenda"
+              >Preço de Venda</label
+            >
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span
+                  class="input-group-text"
+                  class="input-group-text"
+                  >R$</span
+                >
+              </div>
+              <input
+                type="number"
+                class="form-control"
+                id="inputPrecoVenda"
+                step="0.01"
+                min="0"
+              />
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label
+              style="font-size: x-large; font-weight: bold"
+              for="inputMargem"
+              >Margem</label
+            >
+            <div class="input-group">
+              <input
+                type="number"
+                class="form-control"
+                id="inputMargem"
+                step="0.01"
+                min="0"
+                max="100"
+                onchange="atualizarPrecoVenda()"
+              />
+              <div class="input-group-append">
+                <span
+                  class="input-group-text"
+                  >%</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- <button
+          style="font-size: larger; font-weight: bold"
+          type="submit"
+          class="btn btn-primary mr-3"
+          onclick="calcular()"
+        >
+          Calcular
+        </button> -->
+        <button
+          type="button"
+          class="btn btn-danger mr-3"
+          style="font-size: larger; font-weight: bold"
+          onclick="limpar(); enableInput();"
+        >
+          Limpar
+        </button>
+        <!-- <button
+          type="button"
+          class="btn btn-success"
+          style="font-size: larger; font-weight: bold"
+          onclick="enableInput();"
+        >
+          Limpar desconto
+        </button> -->
+      </form>
+
+     <!-- <div class="mt-5">
+        <h2>Resultado</h2>
+        <table class="table table-striped" style="color: white">
+          <thead>
+            <tr>
+              <th>Preço de Custo</th>
+              <th>Markup</th>
+              <th>Desconto</th>
+              <th>Preço de Venda</th>
+              <th>Margem</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td id="resultadoCusto"></td>
+              <td id="resultadoMarkup"></td>
+              <td id="resultadoDesconto"></td>
+              <td id="resultadoPrecoVenda"></td>
+              <td id="resultadoMargem"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      -->
+    <script>
+       function calcular() {
+       const custo = document.getElementById("inputCusto").value;
+       const markup = document.getElementById("inputMarkup").value;
+       const desconto = document.getElementById("inputDesconto").value;
+       const margem = parseFloat(document.getElementById("inputMargem").value);
+
+       const precoVenda = custo * markup * (1 - desconto / 100);
+       const precoCoVenda = parseFloat(precoVenda).toFixed(2);
+       document.getElementById("inputPrecoVenda").value = precoVenda.toFixed(2);
+
+       const margemCalculada = ((precoVenda - custo) / precoVenda) * 100;
+       document.getElementById("inputMargem").value =
+       margemCalculada.toFixed(2);
+
+       document.getElementById("resultadoCusto").textContent = `R$ ${custo}`;
+       document.getElementById("resultadoMarkup").textContent = `${(
+       markup * 100
+       ).toFixed(2)}%`;
+       document.getElementById(
+       "resultadoDesconto"
+       ).textContent = `${desconto}%`;
+       document.getElementById(
+       "resultadoPrecoVenda"
+       ).textContent = `R$ ${precoVenda.toFixed(2)}`;
+       document.getElementById(
+       "resultadoMargem"
+       ).textContent = `${margemCalculada.toFixed(2)}%`;
+       }
+
+       function limpar() {
+       document.getElementById("inputCusto").value = "";
+       document.getElementById("inputMarkup").value = "";
+       document.getElementById("inputDesconto").value = "";
+       document.getElementById("inputPrecoVenda").value = "";
+       document.getElementById("inputMargem").value = "";
+       document.getElementById("resultadoCusto").textContent = "";
+       document.getElementById("resultadoMarkup").textContent = "";
+       document.getElementById("resultadoDesconto").textContent = "";
+       document.getElementById("resultadoPrecoVenda").textContent = "";
+       document.getElementById("resultadoMargem").textContent = "";
+       }
+
+       function enableInput() {
+       var input = document.getElementById("inputDesconto");
+       input.removeAttribute("readonly");
+       }
+
+       function atualizarMargem() {
+       const custo = Number(document.getElementById("inputCusto").value);
+       const markup = Number(document.getElementById("inputMarkup").value);
+       const desconto = Number(document.getElementById("inputDesconto").value = "0");
+       const margem = Number(document.getElementById("inputMargem").value);
+
+       const precoVenda = custo / (1 - margem / 100) / (1 - desconto / 100);
+       const precoCoVenda = Number(precoVenda.toFixed(2));
+       document.getElementById("inputPrecoVenda").value = precoCoVenda;
+
+       const margemCalculada = ((precoVenda - custo) / precoVenda) * 100;
+       parseFloat(document.getElementById("inputMargem").value) =
+       margemCalculada.toFixed(1);
+
+       document.getElementById(
+       "resultadoCusto"
+       ).textContent = `R$ ${custo.toFixed(2)}`;
+       document.getElementById("resultadoMarkup").textContent = `${(
+       markup * 100
+       ).toFixed(2)}%`;
+       document.getElementById(
+       "resultadoDesconto"
+       ).textContent = `${desconto.toFixed(2)}%`;
+       document.getElementById(
+       "resultadoPrecoVenda"
+       ).textContent = `R$ ${precoCoVenda}`;
+       document.getElementById(
+       "resultadoMargem"
+       ).textContent = `${margemCalculada.toFixed(2)}%`;
+       }
+
+       const inputMargem = document.getElementById("inputMargem");
+       inputMargem.addEventListener("input", function (event) {
+       clearTimeout(timer);
+       timer = setTimeout(function () {
+       atualizarMargem();
+       }, 500); // espera 500 milissegundos antes de chamar atualizarMargem()
+       });
+
+      // const myInput = document.getElementById("inputDesconto");
+       // myInput.setAttribute("readonly", true);
+
+       function atualizarPrecoVenda() {
+       const custo = document.getElementById("inputCusto").value;
+       const markup = document.getElementById("inputMarkup").value;
+       const desconto = (document.getElementById("inputDesconto").value = "0");
+       const precoVenda = document.getElementById("inputPrecoVenda").value;
+
+       const margem = ((precoVenda - custo) / precoVenda) * 100;
+       document.getElementById("inputMargem").value = margem.toFixed(2);
+
+       document.getElementById("resultadoCusto").textContent = `R$ ${custo}`;
+       document.getElementById("resultadoMarkup").textContent = `${(
+       markup * 100
+       ).toFixed(2)}%`;
+       document.getElementById(
+       "resultadoDesconto"
+       ).textContent = `${desconto}%`;
+       document.getElementById(
+       "resultadoPrecoVenda"
+       ).textContent = `R$ ${precoVenda}`;
+       document.getElementById(
+       "resultadoMargem"
+       ).textContent = `${margem.toFixed(2)}`;
+       }
+
+       const inputPrecoVenda = document.getElementById("inputPrecoVenda");
+       inputPrecoVenda.addEventListener("input", function (event) {
+       atualizarPrecoVenda();
+
+       const myInput = document.getElementById("inputDesconto");
+       myInput.setAttribute("readonly", true);
+       });
+
+       document.addEventListener("DOMContentLoaded", function (event) {
+       inputMargem.addEventListener("input", function (event) {
+       atualizarMargem();
+       });
+
+       inputPrecoVenda.addEventListener("input", function (event) {
+       atualizarPrecoVenda();
+       });
+       });
+
+       const form = document.querySelector("form");
+       form.addEventListener("submit", function (event) {
+       event.preventDefault();
+       calcular();
+       });
+
+
+      // function removeLabelStyle() {
+      // var labels = document.getElementsByTagName('label');
+      // for (var i = 0; i < labels.length; i++) {
+      // labels[i].removeAttribute('style');
+      // }
+      // }
+
+      // function addLabelStyle() {
+      // var labels = document.getElementsByTagName('label');
+      // for (var i = 0; i < labels.length; i++) {
+      // labels[i].setAttribute('style', 'color: red;');
+      // }
+      // }
+
+      // var horarioExecucao = '22:39:00'; // horário de execução (HH:MM:SS)
+      // var horaAtual = new Date().toLocaleTimeString('pt-BR'); // hora atual
+
+       // calcula a diferença em milissegundos entre o horário de execução e a hora atual
+      // var diferencaHoras = (new Date(`01/01/1970 ${horarioExecucao}`) - new Date(`01/01/1970 ${horaAtual}`));
+
+       // se a diferença for negativa, o horário de execução é no dia seguinte
+      // if (diferencaHoras < 0) {
+      // diferencaHoras += 86400000; // adiciona um dia em milissegundos
+      // }
+
+       // define a função para ser executada a cada dia no horário especificado
+      // setInterval(function() {
+      // removeLabelStyle();
+      // setTimeout(function() {
+      // addLabelStyle();
+      // }, 60000); // aguarda 1 minuto (60000 milissegundos) antes de adicionar o estilo de volta
+      // }, diferencaHoras);
+    </script>
+  </body>
+</html>
